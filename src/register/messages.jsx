@@ -201,6 +201,11 @@ const messages = defineMessages({
     defaultMessage: 'Did you mean',
     description: 'Did you mean alert suggestion',
   },
+  'registration.recaptcha.required': {
+    id: 'registration.recaptcha.required',
+    defaultMessage: 'Please complete the CAPTCHA challenge to create your account.',
+    description: 'Error shown when the user submits the registration form without solving the reCAPTCHA',
+  },
 });
 
 export default messages;

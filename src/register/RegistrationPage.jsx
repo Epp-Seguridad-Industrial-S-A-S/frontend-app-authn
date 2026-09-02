@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useMemo, useState,
+  useEffect, useMemo, useRef, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -9,6 +9,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { Form, Spinner, StatefulButton } from '@openedx/paragon';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
+import ReCAPTCHA from 'react-google-recaptcha';
 import { Helmet } from 'react-helmet';
 import Skeleton from 'react-loading-skeleton';
 
@@ -67,6 +68,11 @@ const RegistrationPage = (props) => {
     institutionLogin,
   } = props;
 
+  // Google reCAPTCHA on the self-registration form. Site key is delivered through MFE_CONFIG;
+  // the token is verified server-side by the epp-registration-captcha registration extension form.
+  const recaptchaSiteKey = getConfig().RECAPTCHA_PUBLIC_KEY;
+  const recaptchaEnabled = Boolean(recaptchaSiteKey) && getConfig().ENABLE_REGISTRATION_RECAPTCHA !== false;
+
   const backedUpFormData = useSelector(state => state.register.registrationFormData);
   const registrationError = useSelector(state => state.register.registrationError);
   const registrationErrorCode = registrationError?.errorCode;
@@ -97,6 +103,10 @@ const RegistrationPage = (props) => {
   const [formStartTime, setFormStartTime] = useState(null);
   // temporary error state for embedded experience because we don't want to show errors on blur
   const [temporaryErrors, setTemporaryErrors] = useState({ ...backedUpFormData.errors });
+
+  const recaptchaRef = useRef(null);
+  const [recaptchaToken, setRecaptchaToken] = useState('');
+  const [recaptchaError, setRecaptchaError] = useState('');
 
   const { cta, host } = queryParams;
   const buttonLabel = cta
@@ -168,6 +178,18 @@ const RegistrationPage = (props) => {
     }
   }, [registrationErrorCode]);
 
+  // Surface a server-side reCAPTCHA rejection and reset the widget so the user can retry.
+  useEffect(() => {
+    const backendMessage = registrationError?.recaptchaToken?.[0]?.userMessage;
+    if (backendMessage) {
+      setRecaptchaError(backendMessage);
+      setRecaptchaToken('');
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset();
+      }
+    }
+  }, [registrationError]);
+
   useEffect(() => {
     if (registrationResult.success) {
       // This event is used by GTM
@@ -235,6 +257,16 @@ const RegistrationPage = (props) => {
     if (!isValid) {
       setErrorCode(prevState => ({ type: FORM_SUBMISSION_ERROR, count: prevState.count + 1 }));
       return;
+    }
+
+    // reCAPTCHA is required for direct (non-SSO) sign-ups
+    if (recaptchaEnabled && !currentProvider) {
+      if (!recaptchaToken) {
+        setRecaptchaError(formatMessage(messages['registration.recaptcha.required']));
+        setErrorCode(prevState => ({ type: FORM_SUBMISSION_ERROR, count: prevState.count + 1 }));
+        return;
+      }
+      payload.recaptchaToken = recaptchaToken;
     }
 
     // Preparing payload for submission
@@ -359,6 +391,25 @@ const RegistrationPage = (props) => {
                 autoSubmitRegisterForm={autoSubmitRegForm}
                 fieldDescriptions={fieldDescriptions}
               />
+              {recaptchaEnabled && !currentProvider && (
+                <div className="mb-4" data-testid="register-recaptcha">
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    sitekey={recaptchaSiteKey}
+                    onChange={(token) => {
+                      setRecaptchaToken(token || '');
+                      setRecaptchaError('');
+                    }}
+                    onExpired={() => setRecaptchaToken('')}
+                    onErrored={() => setRecaptchaToken('')}
+                  />
+                  {recaptchaError && (
+                    <Form.Control.Feedback type="invalid" hasIcon={false}>
+                      {recaptchaError}
+                    </Form.Control.Feedback>
+                  )}
+                </div>
+              )}
               <StatefulButton
                 id="register-user"
                 name="register-user"
