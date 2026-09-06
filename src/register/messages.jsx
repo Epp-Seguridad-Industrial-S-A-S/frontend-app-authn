@@ -19,7 +19,7 @@ const messages = defineMessages({
   },
   'registration.confirm.email.label': {
     id: 'registration.confirm.email.label',
-    defaultMessage: 'Confirm email',
+    defaultMessage: 'Confirmar correo electrónico',
     description: 'Label that appears above the confirm-email field on the register page',
   },
   'registration.username.label': {
@@ -208,7 +208,7 @@ const messages = defineMessages({
   },
   'registration.recaptcha.required': {
     id: 'registration.recaptcha.required',
-    defaultMessage: 'Please complete the CAPTCHA challenge to create your account.',
+    defaultMessage: 'Por favor completa el CAPTCHA para crear tu cuenta.',
     description: 'Error shown when the user submits the registration form without solving the reCAPTCHA',
   },
 });
