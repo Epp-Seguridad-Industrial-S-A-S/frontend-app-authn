@@ -83,7 +83,11 @@ const getRegisterCall = (dispatch) => dispatch.mock.calls
 
 describe('RegistrationPage reCAPTCHA', () => {
   beforeAll(() => {
-    mergeConfig({ RECAPTCHA_PUBLIC_KEY: 'test-site-key', ENABLE_REGISTRATION_RECAPTCHA: true });
+    mergeConfig({
+      RECAPTCHA_PUBLIC_KEY: 'test-site-key',
+      ENABLE_REGISTRATION_RECAPTCHA: true,
+      EPP_ENABLE_CONFIRM_EMAIL: false, // isolate reCAPTCHA behaviour from the confirm-email gate
+    });
   });
 
   beforeEach(() => {

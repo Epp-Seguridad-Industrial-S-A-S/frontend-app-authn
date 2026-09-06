@@ -17,6 +17,11 @@ const messages = defineMessages({
     defaultMessage: 'Email',
     description: 'Label that appears above email field on register page',
   },
+  'registration.confirm.email.label': {
+    id: 'registration.confirm.email.label',
+    defaultMessage: 'Confirm email',
+    description: 'Label that appears above the confirm-email field on the register page',
+  },
   'registration.username.label': {
     id: 'registration.username.label',
     defaultMessage: 'Public username',

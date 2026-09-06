@@ -74,12 +74,10 @@ const FormFieldRenderer = (props) => {
       );
       break;
     }
-    case 'text':
-    case 'email': {
+    case 'text': {
       formField = (
         <Form.Group controlId={fieldData.name} isInvalid={!!(isRequired && errorMessage)}>
           <Form.Control
-            type={fieldData.type === 'email' ? 'email' : 'text'}
             className={className}
             name={fieldData.name}
             value={value}

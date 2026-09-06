@@ -83,23 +83,6 @@ describe('FieldRendererTests', () => {
     expect(value).toEqual('ABC');
   });
 
-  it('should render an email input field (confirm_email)', () => {
-    const fieldData = {
-      type: 'email',
-      label: 'Confirm Email',
-      name: 'confirm_email',
-    };
-
-    const { container } = render(<FieldRenderer value={value} fieldData={fieldData} onChangeHandler={changeHandler} />);
-    const input = container.querySelector('input#confirm_email');
-    const label = container.querySelector('label');
-    fireEvent.change(input, { target: { value: 'student@example.com' } });
-
-    expect(input.type).toEqual('email');
-    expect(label.textContent).toContain(fieldData.label);
-    expect(value).toEqual('student@example.com');
-  });
-
   it('should render checkbox field', () => {
     const fieldData = {
       type: 'checkbox',
