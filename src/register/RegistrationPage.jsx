@@ -394,6 +394,8 @@ const RegistrationPage = (props) => {
                   handleChange={handleOnChange}
                   handleFocus={() => handleErrorChange('confirm_email', '')}
                   handleBlur={handleConfirmEmailBlur}
+                  handlePaste={(e) => e.preventDefault()}
+                  handleDrop={(e) => e.preventDefault()}
                   floatingLabel={formatMessage(messages['registration.confirm.email.label'])}
                 />
               )}

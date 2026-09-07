@@ -124,7 +124,7 @@ describe('RegistrationPage reCAPTCHA', () => {
     fireEvent.click(document.querySelector('button.btn-brand'));
 
     expect(getRegisterCall(store.dispatch)).toBeUndefined();
-    expect(screen.getByText('Please complete the CAPTCHA challenge to create your account.')).toBeTruthy();
+    expect(screen.getByText('Por favor completa el CAPTCHA para crear tu cuenta.')).toBeTruthy();
   });
 
   it('sends recaptcha_token in the payload once solved', () => {

@@ -5,7 +5,9 @@ import { mergeConfig } from '@edx/frontend-platform';
 import {
   configure, getLocale, injectIntl, IntlProvider,
 } from '@edx/frontend-platform/i18n';
-import { fireEvent, render, screen } from '@testing-library/react';
+import {
+  createEvent, fireEvent, render, screen,
+} from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
 
@@ -105,7 +107,31 @@ describe('RegistrationPage confirm email', () => {
 
     it('renders a second email input', () => {
       renderPage(mockStore(baseState));
-      expect(screen.getByLabelText('Confirm email')).toBeTruthy();
+      expect(screen.getByLabelText('Confirmar correo electrónico')).toBeTruthy();
+    });
+
+    it('blocks paste and drop on the confirm-email input', () => {
+      renderPage(mockStore(baseState));
+      const confirmInput = screen.getByLabelText('Confirmar correo electrónico');
+
+      const pasteEvent = createEvent.paste(confirmInput, { clipboardData: { getData: () => 'x@y.com' } });
+      pasteEvent.preventDefault = jest.fn();
+      fireEvent(confirmInput, pasteEvent);
+      expect(pasteEvent.preventDefault).toHaveBeenCalled();
+
+      const dropEvent = createEvent.drop(confirmInput);
+      dropEvent.preventDefault = jest.fn();
+      fireEvent(confirmInput, dropEvent);
+      expect(dropEvent.preventDefault).toHaveBeenCalled();
+    });
+
+    it('still allows paste on the primary email input', () => {
+      renderPage(mockStore(baseState));
+      const emailInput = screen.getByLabelText('Email');
+      const pasteEvent = createEvent.paste(emailInput, { clipboardData: { getData: () => 'x@y.com' } });
+      pasteEvent.preventDefault = jest.fn();
+      fireEvent(emailInput, pasteEvent);
+      expect(pasteEvent.preventDefault).not.toHaveBeenCalled();
     });
 
     it('blocks submission and shows an error when the two emails differ', () => {
@@ -114,7 +140,7 @@ describe('RegistrationPage confirm email', () => {
       renderPage(store);
 
       fillBaseFields();
-      fireEvent.change(screen.getByLabelText('Confirm email'), {
+      fireEvent.change(screen.getByLabelText('Confirmar correo electrónico'), {
         target: { value: 'john.doe@exampl.com', name: 'confirm_email' },
       });
       fireEvent.click(document.querySelector('button.btn-brand'));
@@ -129,7 +155,7 @@ describe('RegistrationPage confirm email', () => {
       renderPage(store);
 
       fillBaseFields();
-      fireEvent.change(screen.getByLabelText('Confirm email'), {
+      fireEvent.change(screen.getByLabelText('Confirmar correo electrónico'), {
         target: { value: 'john.doe@example.com', name: 'confirm_email' },
       });
       fireEvent.click(document.querySelector('button.btn-brand'));
@@ -147,7 +173,7 @@ describe('RegistrationPage confirm email', () => {
 
     it('does not render a second email input', () => {
       renderPage(mockStore(baseState));
-      expect(screen.queryByLabelText('Confirm email')).toBeNull();
+      expect(screen.queryByLabelText('Confirmar correo electrónico')).toBeNull();
     });
   });
 });

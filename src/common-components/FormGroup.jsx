@@ -36,6 +36,8 @@ const FormGroup = (props) => {
         onBlur={handleOnBlur}
         onClick={handleClick}
         onChange={props.handleChange}
+        onPaste={props.handlePaste}
+        onDrop={props.handleDrop}
         controlClassName={props.borderClass}
         trailingElement={props.trailingElement}
         floatingLabel={props.floatingLabel}
@@ -72,7 +74,9 @@ FormGroup.defaultProps = {
   handleBlur: null,
   handleChange: () => {},
   handleClick: null,
+  handleDrop: null,
   handleFocus: null,
+  handlePaste: null,
   helpText: [],
   options: null,
   readOnly: false,
@@ -92,7 +96,9 @@ FormGroup.propTypes = {
   handleBlur: PropTypes.func,
   handleChange: PropTypes.func,
   handleClick: PropTypes.func,
+  handleDrop: PropTypes.func,
   handleFocus: PropTypes.func,
+  handlePaste: PropTypes.func,
   helpText: PropTypes.arrayOf(PropTypes.string),
   name: PropTypes.string.isRequired,
   options: PropTypes.func,
